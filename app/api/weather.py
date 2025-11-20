@@ -1,3 +1,4 @@
+import httpx
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.dependency import get_weather_service
@@ -14,5 +15,9 @@ async def get_weather(
     try:
         weather = await service.get_weather(city)
         return weather
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 404:
+            raise HTTPException(status_code=404, detail="city doesn't found")
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -13,6 +13,11 @@ class LogLevel(str, enum.Enum):
     FATAL = "FATAL"
 
 
+class StorageType(str, enum.Enum):
+    LOCAL = "local"
+    S3 = "s3"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -35,6 +40,15 @@ class Settings(BaseSettings):
 
     data_dir: Path = Field(default=app_root / "data")
     log_file: Path = Field(default=app_root / "logs" / "weather.log")
+
+    # Storage settings
+    storage_type: StorageType = StorageType.LOCAL
+
+    # AWS S3 settings
+    aws_s3_bucket: str | None = None
+    aws_region: str = "us-east-1"
+    aws_access_key_id: str | None = None
+    aws_secret_access_key: str | None = None
 
 
 settings = Settings()

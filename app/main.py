@@ -5,12 +5,15 @@ import uvicorn
 from fastapi import FastAPI
 
 from app.api import get_router
+from app.domain.repositories.storage import StorageRepository
 from app.infrastracture.cache.memory_cache import MemoryCacheRepository
 from app.infrastracture.external.weather_client import WeatherAPIClient
 from app.infrastracture.logging.local_logging import LocalLoggingRepository
+from app.infrastracture.storage.factory_storage import factory_storage_repository
 from app.infrastracture.storage.local_storage import LocalStorageRepository
+from app.infrastracture.storage.s3_storage import S3StorageRepository
 from app.services.weather_service import WeatherService
-from app.settings import settings
+from app.settings import StorageType, settings
 
 
 @asynccontextmanager
@@ -19,7 +22,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     cache_repository = MemoryCacheRepository(
         expiry_minutes=settings.cache_expiry_minutes
     )
-    storage_repository = LocalStorageRepository(data_dir=settings.data_dir)
+    storage_repository = factory_storage_repository(settings.storage_type)
     logging_repository = LocalLoggingRepository(log_file=settings.log_file)
 
     weather_service = WeatherService(
