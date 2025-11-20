@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+skip-string-normalization = true
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.pytest_cache
+  | \.venv
+  | venv
+  | build
+  | dist
+  | data
+  | scripts
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+combine_as_imports = true
+include_trailing_comma = true
+skip_glob = [
+    "*/migrations/*",
+    "*/venv/*",
+    "*/.venv/*",
+]
+known_first_party = ["app"]
+known_third_party = [
+    "fastapi",
+    "pydantic",
+    "uvicorn",
+]
+default_section = "THIRDPARTY"
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+follow_imports = "silent"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_redundant_casts = true
+warn_unreachable = true
+strict_optional = true
+no_implicit_optional = true
+show_error_codes = true
+show_column_numbers = true
+pretty = true
+plugins = [
+    "pydantic.mypy",
+    "sqlalchemy.ext.mypy.plugin",
+]
+exclude = '''
+/(
+    venv
+  | \.venv
+  | tests
+  | scripts
+  | app/infrastructure/security
+)/
+'''
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
